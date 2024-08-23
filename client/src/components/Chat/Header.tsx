@@ -6,11 +6,35 @@ import type { ContextType } from '~/common';
 import { EndpointsMenu, ModelSpecsMenu, PresetsMenu, HeaderNewChat } from './Menus';
 import ExportAndShareMenu from './ExportAndShareMenu';
 import { useMediaQuery, useHasAccess } from '~/hooks';
-import HeaderOptions from './Input/HeaderOptions';
 import BookmarkMenu from './Menus/BookmarkMenu';
 import AddMultiConvo from './AddMultiConvo';
+import HeaderOptions from './Input/HeaderOptions';
 
-const defaultInterface = getConfigDefaults().interface;
+const Roles = {
+  ADMIN: 'admin',
+  DEVELOPER: 'developer',
+  USER: 'user',
+};
+
+const rolePermissions = {
+  [Roles.ADMIN]: {
+    canAccessSettings: true,
+    canManageUsers: true,
+    canUseAdvancedFeatures: true,
+  },
+  [Roles.DEVELOPER]: {
+    canAccessSettings: true,
+    canManageUsers: false,
+    canUseAdvancedFeatures: true,
+  },
+  [Roles.USER]: {
+    canAccessSettings: false,
+    canManageUsers: false,
+    canUseAdvancedFeatures: false,
+  },
+};
+
+const defaultInterface = { ...getConfigDefaults().interface, plugin: true };
 
 export default function Header() {
   const { data: startupConfig } = useGetStartupConfig();
@@ -28,6 +52,10 @@ export default function Header() {
 
   const isSmallScreen = useMediaQuery('(max-width: 768px)');
 
+  // Predefinir el rol del usuario como USER
+  const userRole = Roles.USER;
+  const userPermissions = rolePermissions[userRole];
+
   return (
     <div className="sticky top-0 z-10 flex h-14 w-full items-center justify-between bg-white p-2 font-semibold dark:bg-gray-800 dark:text-white">
       <div className="hide-scrollbar flex w-full items-center justify-between gap-2 overflow-x-auto">
@@ -35,7 +63,7 @@ export default function Header() {
           {!navVisible && <HeaderNewChat />}
           {interfaceConfig.endpointsMenu === true && <EndpointsMenu />}
           {modelSpecs.length > 0 && <ModelSpecsMenu modelSpecs={modelSpecs} />}
-          {<HeaderOptions interfaceConfig={interfaceConfig} />}
+          {userPermissions.canAccessSettings && <HeaderOptions interfaceConfig={interfaceConfig} />}
           {interfaceConfig.presets === true && <PresetsMenu />}
           {hasAccessToBookmarks === true && <BookmarkMenu />}
           <AddMultiConvo />
