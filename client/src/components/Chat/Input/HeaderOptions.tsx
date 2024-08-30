@@ -90,7 +90,7 @@ export default function HeaderOptions({
                   type="button"
                   variant="outline"
                   onClick={triggerAdvancedMode}
-                  className="flex h-[40px] min-w-4 px-3 radix-state-open:bg-surface-hover"
+                  className="flex hidden h-[40px] min-w-4 px-3 radix-state-open:bg-surface-hover"
                 >
                   <Settings2 className="w-4 text-gray-600 dark:text-white" />
                 </Button>
